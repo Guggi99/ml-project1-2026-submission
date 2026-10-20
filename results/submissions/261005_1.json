@@ -1,0 +1,12 @@
+{
+  "id": "261005_1",
+  "date": "2026-10-05",
+  "run": "261004_pg_logistic",
+  "cv_f1_mean": 0.402283,
+  "commit": "f2c9544",
+  "dirty": false,
+  "csv_sha256": "d2aa7775e9179421dcb81631c91765ab68503667d2fcdabe26508e65685da0da",
+  "predicted_positive": 0.088362,
+  "aicrowd_f1": 0.418,
+  "aicrowd_accuracy": 0.897
+}

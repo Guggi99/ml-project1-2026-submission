@@ -1,0 +1,83 @@
+# Name shown for this workflow in GitHub's Actions tab.
+name: tests
+
+# Events that start the workflow (any one of these is enough).
+on:
+  push:              # Run when commits are pushed to any branch.
+  pull_request:      # Run when a pull request is opened or updated.
+  workflow_dispatch: # Also allow starting it manually from the Actions tab.
+
+# Avoid spending time checking an older commit when a newer one arrives.
+concurrency:
+  # github.ref identifies the branch or pull-request ref being checked.
+  group: tests-${{ github.ref }}
+  # Cancel an unfinished run if a new run starts with the same group value.
+  cancel-in-progress: true
+
+# These two jobs run independently; steps inside each job run in order.
+jobs:
+  # Run the project's own tests and check its code formatting.
+  # REQUIRED: must be green before a PR can be merged (branch protection on main).
+  ours:
+    # GitHub provides a fresh Ubuntu virtual machine for this job.
+    runs-on: ubuntu-latest
+    steps:
+      # Download this project's code onto the virtual machine.
+      - uses: actions/checkout@v4
+
+      # Install Python; "with" supplies settings to the action above it.
+      # Python and NumPy versions match the course grading environment.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      # NumPy: numerical computations; pytest: tests; Black: formatting.
+      # == pins each package to a specific version for consistent runs.
+      - run: pip install numpy==1.23.1 pytest==7.1.2 black==25.9.0
+
+      - name: Our tests
+        # Discover and run this project's tests; failed tests fail this step.
+        run: pytest
+
+      - name: Formatting
+        # Still check formatting if an earlier step failed (but not if cancelled).
+        if: success() || failure()
+        # Check Python files under "." (the project directory) without editing.
+        # This step fails if Black would change any file's formatting.
+        run: black --check .
+
+  # Run the course's public grading tests as a separate GitHub check.
+  # INFORMATION ONLY, not required to merge. Shown separately so it never hides
+  # the result of "ours". Red while a method or run.py is unfinished.
+  official:
+    # This is a separate machine, so code and dependencies must be set up again.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Put our code in "project/", separate from the course repository.
+          path: project
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      # GitPython adds Python support for Git operations used by the grading tests.
+      - run: pip install numpy==1.23.1 pytest==7.1.2 gitpython==3.1.18 black==25.9.0
+
+      # Download the current grading tests instead of keeping a copy in our repo.
+      - name: Fetch course grading tests
+        # The | means the following indented lines form one shell script.
+        # Clone into "course/": --depth 1 skips older commit history,
+        # --filter=blob:none defers file downloads until needed, and --sparse
+        # lets us select the folder we want with the second command.
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/epfml/ML_course.git course
+          git -C course sparse-checkout set projects/project1/grading_tests
+
+      - name: Official grading tests
+        # Run the command from the folder containing the course's tests.
+        working-directory: course/projects/project1/grading_tests
+        # --github_link tells the tests where our project is. GITHUB_WORKSPACE
+        # is GitHub's absolute workspace path; /project is our checkout above.
+        # "." selects tests in the current directory. -k excludes the URL-format
+        # test because we pass a local folder here, rather than a submission URL.
+        run: pytest --github_link "$GITHUB_WORKSPACE/project" . -k "not github_link_format"

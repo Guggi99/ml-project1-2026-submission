@@ -1,0 +1,36 @@
+{
+  "id": "261004_pg_mse-gd",
+  "date": "2026-10-04",
+  "author": "pg",
+  "name": "mse-gd",
+  "hypothesis": "reference: plain preprocessing, MSE gradient descent 200 x 0.05 (25 Sep chain run)",
+  "baseline": null,
+  "commit": "2ec2514",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "preprocessing": {},
+    "model": {
+      "name": "mean_squared_error_gd",
+      "max_iters": 200,
+      "gamma": 0.05
+    },
+    "threshold": "positive_rate"
+  },
+  "f1_folds": [
+    0.38875,
+    0.395195,
+    0.392587,
+    0.400383,
+    0.396301
+  ],
+  "f1_mean": 0.394643,
+  "f1_std": 0.003872,
+  "acc_mean": 0.893096,
+  "seconds": 64.9,
+  "decision": ""
+}

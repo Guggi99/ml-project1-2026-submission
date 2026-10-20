@@ -1,0 +1,36 @@
+{
+  "id": "261010_pg_train-f1-threshold",
+  "date": "2026-10-10",
+  "author": "pg",
+  "name": "train-f1-threshold",
+  "hypothesis": "the training-F1 optimal cutoff beats flagging the top 8.8 %",
+  "baseline": "261004_pg_logistic",
+  "commit": "7a1b011",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "threshold": "train_f1",
+    "preprocessing": {},
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 500,
+      "gamma": 0.05
+    }
+  },
+  "f1_folds": [
+    0.421953,
+    0.421884,
+    0.421395,
+    0.425635,
+    0.418838
+  ],
+  "f1_mean": 0.421941,
+  "f1_std": 0.002171,
+  "acc_mean": 0.870133,
+  "seconds": 139.1,
+  "decision": ""
+}

@@ -1,0 +1,54 @@
+{
+  "id": "261013_aa_tuned-logistic-v2-all-groups",
+  "date": "2026-10-13",
+  "author": "aa",
+  "name": "tuned-logistic-v2-all-groups",
+  "hypothesis": "ordinal_one_hot and sex_one_hot add F1 on top of the six default groups",
+  "baseline": "261012_aa_tuned-logistic-v2-engineered",
+  "commit": "13ff174",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "threshold": "train_f1",
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": true,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true,
+      "extras": true,
+      "engineered": [
+        "sex_age",
+        "sex_factors",
+        "age_factors",
+        "counts",
+        "genhlth",
+        "ordinal_one_hot",
+        "factor_pairs",
+        "sex_one_hot"
+      ]
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 1000,
+      "gamma": 0.1
+    }
+  },
+  "f1_folds": [
+    0.444809,
+    0.439741,
+    0.438947,
+    0.445073,
+    0.442255
+  ],
+  "f1_mean": 0.442165,
+  "f1_std": 0.002517,
+  "acc_mean": 0.881305,
+  "seconds": 485.5,
+  "decision": ""
+}

@@ -1,0 +1,12 @@
+{
+  "id": "261012_1",
+  "date": "2026-10-12",
+  "run": "261012_dg_tuned-logistic",
+  "cv_f1_mean": 0.439428,
+  "commit": "9a3fab7",
+  "dirty": false,
+  "csv_sha256": "9c16fa6336c5879f6c40cf2eafda2c8177646270c75afe870aacd53d561330c0",
+  "predicted_positive": 0.125728,
+  "aicrowd_f1": "0.450",
+  "aicrowd_accuracy": "0.883"
+}

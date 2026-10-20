@@ -1,0 +1,43 @@
+{
+  "id": "261012_pg_v2-no-flags",
+  "date": "2026-10-12",
+  "author": "pg",
+  "name": "v2-no-flags",
+  "hypothesis": "without the survey-skip flags (HAREHAB1 and two aspirin flags) the F1 is lower by about 0.01",
+  "baseline": "261011_pg_v2-train-f1",
+  "commit": "44efdc9",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "threshold": "train_f1",
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": false,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 500,
+      "gamma": 0.05
+    }
+  },
+  "f1_folds": [
+    0.428396,
+    0.424358,
+    0.424205,
+    0.428553,
+    0.423685
+  ],
+  "f1_mean": 0.425839,
+  "f1_std": 0.002163,
+  "acc_mean": 0.870416,
+  "seconds": 214.2,
+  "decision": ""
+}

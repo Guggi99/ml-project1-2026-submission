@@ -1,0 +1,45 @@
+{
+  "id": "261012_aa_tuned-logistic-v2-engineered",
+  "date": "2026-10-12",
+  "author": "aa",
+  "name": "tuned-logistic-v2-engineered",
+  "hypothesis": "the full v2 preprocessing (steps 5 and 7) also improves the tuned logistic model",
+  "baseline": "261012_dg_tuned-logistic",
+  "commit": "a3aa576",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "threshold": "train_f1",
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": true,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true,
+      "extras": true,
+      "engineered": true
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 1000,
+      "gamma": 0.1
+    }
+  },
+  "f1_folds": [
+    0.445642,
+    0.441201,
+    0.440893,
+    0.446527,
+    0.440563
+  ],
+  "f1_mean": 0.442965,
+  "f1_std": 0.00257,
+  "acc_mean": 0.878605,
+  "seconds": 312.8,
+  "decision": ""
+}

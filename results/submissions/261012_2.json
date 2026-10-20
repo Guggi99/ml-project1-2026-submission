@@ -1,0 +1,12 @@
+{
+  "id": "261012_2",
+  "date": "2026-10-12",
+  "run": "261012_aa_tuned-logistic-v2-engineered",
+  "cv_f1_mean": 0.442965,
+  "commit": "6513fbb",
+  "dirty": false,
+  "csv_sha256": "788f516dd5d0183ee1ad21ca62717a5b8b416a1b997a78e2fd5f2652dee044bc",
+  "predicted_positive": 0.131844,
+  "aicrowd_f1": "0.454",
+  "aicrowd_accuracy": "0.881"
+}

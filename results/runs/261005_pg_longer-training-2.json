@@ -1,0 +1,43 @@
+{
+  "id": "261005_pg_longer-training-2",
+  "date": "2026-10-05",
+  "author": "pg",
+  "name": "longer-training",
+  "hypothesis": "500 steps are not converged; 2000 steps let the model finish learning",
+  "baseline": "261004_pg_logistic",
+  "commit": "7983bdc",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": true,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 2000,
+      "gamma": 0.05
+    },
+    "threshold": "positive_rate"
+  },
+  "f1_folds": [
+    0.423097,
+    0.419781,
+    0.432133,
+    0.42586,
+    0.426051
+  ],
+  "f1_mean": 0.425384,
+  "f1_std": 0.004071,
+  "acc_mean": 0.898722,
+  "seconds": 500.9,
+  "decision": ""
+}

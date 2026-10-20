@@ -1,0 +1,52 @@
+{
+  "id": "261011_aa_v2-engineered-lean-3",
+  "date": "2026-10-11",
+  "author": "aa",
+  "name": "v2-engineered-lean",
+  "hypothesis": "six step-7 engineered groups raise F1 for logistic regression too",
+  "baseline": "261005_pg_longer-training-2",
+  "commit": "2583d43",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": true,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true,
+      "extras": true,
+      "engineered": [
+        "sex_age",
+        "sex_factors",
+        "age_factors",
+        "counts",
+        "genhlth",
+        "factor_pairs"
+      ]
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 2000,
+      "gamma": 0.05
+    },
+    "threshold": "positive_rate"
+  },
+  "f1_folds": [
+    0.430308,
+    0.427116,
+    0.431625,
+    0.428459,
+    0.429664
+  ],
+  "f1_mean": 0.429434,
+  "f1_std": 0.001545,
+  "acc_mean": 0.89934,
+  "seconds": 612.8,
+  "decision": ""
+}

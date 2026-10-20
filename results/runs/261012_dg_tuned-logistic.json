@@ -1,0 +1,43 @@
+{
+  "id": "261012_dg_tuned-logistic",
+  "date": "2026-10-12",
+  "author": "dg",
+  "name": "tuned-logistic",
+  "hypothesis": "converged gamma, iteration count and lambda improve the v2 model",
+  "baseline": "261011_pg_v2-train-f1",
+  "commit": "9a3fab7",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "threshold": "train_f1",
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": true,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 1000,
+      "gamma": 0.1
+    }
+  },
+  "f1_folds": [
+    0.443445,
+    0.434886,
+    0.436463,
+    0.44366,
+    0.438684
+  ],
+  "f1_mean": 0.439428,
+  "f1_std": 0.003578,
+  "acc_mean": 0.879412,
+  "seconds": 689.0,
+  "decision": ""
+}

@@ -1,0 +1,7 @@
+# Allowed: standard library, NumPy, and plotting libraries for visualisation only.
+# Grading runs on Python 3.9 + NumPy 1.23 — avoid newer NumPy-only features.
+numpy
+matplotlib
+pytest
+gitpython  # needed by the course grading tests
+black==25.9.0  # same version as CI

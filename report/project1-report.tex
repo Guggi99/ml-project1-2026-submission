@@ -1,0 +1,242 @@
+\documentclass[10pt,conference,compsocconf]{IEEEtran}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+
+\hypersetup{hidelinks}
+
+\begin{document}
+
+\title{Predicting Coronary Heart Disease from BRFSS Survey Data}
+
+\author{
+  Ahmed Azaiez, David Gorgiev, and Peter Guggenbach\\
+  \textit{CS-433 Machine Learning, EPFL}
+}
+
+\maketitle
+
+\begin{abstract}
+We predict whether a respondent reports myocardial infarction or coronary
+heart disease (MICHD) from 321 BRFSS survey variables~\cite{cdc2015data}.  Only 8.8\% of the
+328,135 training examples are positive, so we optimize F1 rather than
+accuracy.  Our NumPy-only system combines questionnaire-aware preprocessing,
+categorical and missing-value indicators, nonlinear features, logistic
+regression, and a threshold fitted for F1.  Stratified five-fold
+cross-validation improves from $0.3946\pm0.0039$ F1 for the MSE-gradient
+baseline to $0.4437\pm0.0022$.  Training on all labelled rows yields 0.455 F1
+and 0.882 accuracy on AIcrowd.  The largest gains come from the decision
+threshold and preprocessing; regularization has little effect.  We also
+identify a survey-design target proxy and discuss why the leaderboard result
+must not be interpreted as prospective clinical performance.
+\end{abstract}
+
+\section{Problem and Data}
+
+The task is binary classification with labels $y\in\{-1,+1\}$, where $+1$
+denotes MICHD.  The inputs contain health, demographic, lifestyle, and survey
+administration variables.  The strong class imbalance makes accuracy alone
+misleading: predicting only the majority class would be accurate but would
+detect no positive cases.  We therefore use positive-class F1,
+$2TP/(2TP+FP+FN)$, as the model-selection metric and report accuracy as a
+secondary measure.  Because the survey records existing diagnoses, our model
+predicts reported MICHD status, not the future causal risk of developing it.
+
+\section{Methods}
+
+\subsection{Preprocessing and Features}
+
+All fitted preprocessing is learned only from the current training fold and
+then applied unchanged to its validation fold.  Questionnaire codes from the
+2015 BRFSS instrument~\cite{cdc2015questionnaire} for
+``none'', ``don't know'', and ``refused'' are converted to zero or missing as
+appropriate.  Mixed units---for example kilograms versus pounds and weekly
+versus monthly frequencies---are converted to common units, and deterministic
+skip logic is resolved before imputation.  Remaining missing values use
+training-fold medians, and every output column is standardized with
+training-fold statistics.
+
+Categorical variables marked by our 321-column feature registry are one-hot
+encoded, with a separate unknown level.  Missing indicators preserve whether
+a numeric value was imputed.  We add squared standardized age and BMI, while
+14 heavy-tailed count variables are clipped at the training 99.5th percentile
+and transformed with $\log(1+x)$.  Module-question flags retain information
+from sparse optional survey sections.  Constant and more-than-95\%-missing raw
+columns are otherwise removed.
+
+Because a linear score cannot create interactions, we add 131 fixed columns:
+age and sex interactions with risk factors, pairwise risk-factor products,
+linear and squared counts of cardiovascular, chronic, and disability factors,
+and interactions of general health with age, sex, and risk factors.  Seven
+further columns interact whether the optional daily-aspirin question was
+answered with age, sex, general health, high blood pressure, high cholesterol,
+diabetes, and blood-pressure medication.  Together with the preceding
+transformations, the selected design matrix has 729 columns before these
+interactions and 736 columns in the final submitted design.
+
+\subsection{Model, Threshold, and Tuning}
+
+We implemented the six required regression methods from scratch using NumPy.
+The selected classifier is logistic regression.  For labels converted to
+$\{0,1\}$, it minimizes the mean binary cross-entropy
+\begin{equation}
+  \mathcal{L}(w)=\frac{1}{N}\sum_{i=1}^{N}
+  \left[\log(1+e^{x_i^\top w})-y_i x_i^\top w\right]
+\end{equation}
+by full-batch gradient descent from $w=0$.  Scores $x^\top w$ are converted to
+labels using the cutoff that maximizes F1 on the training rows.  This cutoff is
+refitted inside every fold, so validation labels are never used to choose it.
+
+We searched step sizes $\gamma\in\{0.05,0.08,0.10,0.12\}$ at 500, 1000,
+2000, and 3000 iterations.  At the selected optimizer setting we evaluated
+$\lambda\in\{0,10^{-6},10^{-5},10^{-4},10^{-3},10^{-2}\}$.  To avoid paying
+for negligible differences, we chose the cheapest and simplest setting
+within 0.0005 F1 of the best mean.  This selected $\gamma=0.10$, 1000
+iterations, and $\lambda=0$.
+
+\subsection{Evaluation Protocol}
+
+Every comparison uses the same five stratified folds and seed 42 on all
+328,135 labelled rows.  Each fold contains approximately 262,508 training and
+65,627 validation rows.  Imputation, scaling, clipping, encodings, model
+weights, and the threshold are fitted anew on its training partition.  We
+report mean and population standard deviation across folds.  The final
+AIcrowd file is produced by fitting the selected pipeline once on all labelled
+rows and predicting the 109,379 test rows.
+
+\section{Results}
+
+Table~\ref{tab:ablation} shows a controlled chain.  The first three rows give
+reference configurations: squared loss, logistic loss, and an F1-specific
+cutoff.  The largest single gain is choosing the decision threshold for F1.
+The codebook-aware feature pipeline contributes a further 0.0134 F1, and
+optimizer tuning improves all five folds by another 0.0041.  Engineered
+features add 0.0035 F1 in all five folds; aspirin interactions add 0.0007 in
+four of five folds, within the fold spread.  We retain them because this frozen
+configuration gave the best AIcrowd score.  The complete system is 0.0490 F1
+above the original baseline.
+
+\begin{table}[t]
+  \centering
+  \caption{Five-fold ablation on all training rows.  $\Delta$ is relative to
+  the preceding row, except the L2 and no-flags comparisons, which use the
+  tuned optimizer row.}
+  \label{tab:ablation}
+  \small
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{lcc}
+    \toprule
+    Configuration & CV F1 & $\Delta$ \\
+    \midrule
+    MSE GD + prevalence cutoff & $0.3946\pm.0039$ & --- \\
+    Logistic + prevalence cutoff & $0.4023\pm.0029$ & +.0076 \\
+    Logistic + F1 cutoff & $0.4219\pm.0022$ & +.0197 \\
+    + questionnaire-aware features & $0.4353\pm.0022$ & +.0134 \\
+    + tuned optimizer & $0.4394\pm.0036$ & +.0041 \\
+    + L2 ($\lambda=10^{-3}$) & $0.4396\pm.0032$ & +.0002 \\
+    + engineered features & $0.4430\pm.0026$ & +.0035 \\
+    + aspirin interactions & $\mathbf{0.4437\pm.0022}$ & +.0007 \\
+    \addlinespace
+    Tuned model, no module flags & $0.4295\pm.0037$ & $-.0099$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Convergence explains the last gain.  At $\gamma=0.05$, increasing from 500 to
+2000 iterations raises F1 from 0.4353 to 0.4393, after which improvement is
+negligible.  Doubling the step size reaches the same region in 1000 iterations.
+The largest regularized mean, 0.4396 at $\lambda=10^{-3}$, differs from the
+unregularized 0.4394 by only 0.0002; $\lambda=10^{-2}$ reduces F1 to 0.4369.
+We therefore retain the simpler unregularized model.
+
+\begin{table}[t]
+  \centering
+  \caption{Mean five-fold F1 across the optimizer grid.}
+  \label{tab:tuning}
+  \scriptsize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{ccccc}
+    \toprule
+    $\gamma\backslash$ iterations & 500 & 1000 & 2000 & 3000 \\
+    \midrule
+    .05 & .4353 & .4375 & .4393 & .4395 \\
+    .08 & .4371 & .4386 & .4391 & .4391 \\
+    .10 & .4374 & \textbf{.4394} & .4391 & .4388 \\
+    .12 & .4377 & .4393 & .4391 & .4387 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The initial uploaded logistic model scored 0.418 F1 and 0.897 accuracy on
+AIcrowd.  The final system predicts 12.90\% of test rows as positive and scores
+\textbf{0.455 F1 with 0.882 accuracy}.  The lower accuracy is expected: an
+F1-oriented cutoff predicts more positives, trading some majority-class
+accuracy for better detection of the minority class.  The final AIcrowd F1 is
+0.0113 above its CV estimate, which is compatible with sampling variation and
+differences between the public test set and our folds.
+
+\section{Limitations and Discussion}
+
+Threshold selection and semantically correct preprocessing matter more here
+than regularization.  However, one useful feature is also a serious limitation.
+\texttt{HAREHAB1} asks about rehabilitation \emph{following a heart attack} and
+is only shown to respondents reporting one; all 773 training respondents for
+whom it is answered are positive.  A separate ablation estimated that sparse
+module flags, dominated by this variable, add about 0.0099 F1.  The feature is
+present in both provided train and test data, but it is a direct target proxy,
+a recognized form of data leakage~\cite{kaufman2012leakage}.  We retain the
+module flags and aspirin interactions to reproduce the benchmark submission;
+removing the module flags lowers CV F1 from 0.4394 to 0.4295.  Consequently,
+this system is suitable for the defined benchmark, not for prospective
+screening.  A clinically meaningful
+follow-up should remove all post-outcome questions and report the resulting
+performance separately.
+
+The same folds were used for hyperparameter selection and the final CV number,
+so the reported mean may contain modest selection optimism.  The independent
+AIcrowd score provides an additional check, but repeated leaderboard queries
+must not replace local validation.  Nested CV or a sealed holdout would give a
+cleaner final generalization estimate.
+
+\section{Conclusion and Reproducibility}
+
+A transparent NumPy pipeline combining logistic loss, an F1-specific cutoff,
+and questionnaire-aware feature engineering reaches 0.455 AIcrowd F1.  The
+ablation shows that the threshold and feature semantics account for most of
+the improvement, while optimizer tuning provides a smaller consistent gain
+and regularization is unnecessary at the tested scale.
+
+The hand-in repository is
+\url{https://github.com/Guggi99/ml-project1-2026-submission}.  Experiments share
+one cross-validation pipeline and store their folds, seed, transformations,
+model, and cutoff rule.  With the three course CSV files in \texttt{data/},
+\texttt{python run.py --data-dir data --submission submission.csv}
+reproduces the frozen submission (SHA-256 prefix \texttt{0a97469b}), which
+scored 0.455 F1 and 0.882 accuracy on AIcrowd versus a CV estimate of 0.4437.
+Every push runs unit, formatting, and course grading tests.  AI assistants were
+used in this project in compliance
+with EPFL rules.  All design decisions, code and text were reviewed and are the
+responsibility of the authors.
+
+\begin{thebibliography}{1}
+
+\bibitem{cdc2015data}
+Centers for Disease Control and Prevention, ``2015 BRFSS survey data and
+documentation,'' 2015. [Online]. Available:
+\url{https://www.cdc.gov/brfss/annual_data/annual_2015.html}
+
+\bibitem{cdc2015questionnaire}
+Centers for Disease Control and Prevention, ``2015 BRFSS questionnaire,''
+2015. [Online]. Available: \url{https://www.cdc.gov/brfss/questionnaires/}
+
+\bibitem{kaufman2012leakage}
+S.~Kaufman, S.~Rosset, C.~Perlich, and O.~Stitelman, ``Leakage in data mining:
+Formulation, detection, and avoidance,'' \emph{ACM Trans. Knowl. Discov. Data},
+vol.~6, no.~4, pp.~15:1--15:21, 2012, doi: 10.1145/2382577.2382579.
+
+\end{thebibliography}
+
+\end{document}

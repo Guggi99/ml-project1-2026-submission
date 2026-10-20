@@ -1,0 +1,43 @@
+{
+  "id": "261011_pg_v2-train-f1",
+  "date": "2026-10-11",
+  "author": "pg",
+  "name": "v2-train-f1",
+  "hypothesis": "v2 preprocessing and the train_f1 cutoff add up",
+  "baseline": "261010_pg_train-f1-threshold",
+  "commit": "9392d20",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "threshold": "train_f1",
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": true,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 500,
+      "gamma": 0.05
+    }
+  },
+  "f1_folds": [
+    0.437234,
+    0.432414,
+    0.433696,
+    0.438205,
+    0.43495
+  ],
+  "f1_mean": 0.4353,
+  "f1_std": 0.002154,
+  "acc_mean": 0.876094,
+  "seconds": 240.1,
+  "decision": ""
+}

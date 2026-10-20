@@ -1,0 +1,43 @@
+{
+  "id": "261012_pg_tuned-no-flags",
+  "date": "2026-10-12",
+  "author": "pg",
+  "name": "tuned-no-flags",
+  "hypothesis": "the flags also matter for the tuned model: dropping them costs F1 on the submitted setting",
+  "baseline": "261012_dg_tuned-logistic",
+  "commit": "44efdc9",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "threshold": "train_f1",
+    "preprocessing": {
+      "codes": true,
+      "standardize_all": true,
+      "flags": false,
+      "registry_one_hot": true,
+      "missing_indicators": true,
+      "nonlinear": true
+    },
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 1000,
+      "gamma": 0.1
+    }
+  },
+  "f1_folds": [
+    0.433101,
+    0.426408,
+    0.427869,
+    0.434783,
+    0.425442
+  ],
+  "f1_mean": 0.42952,
+  "f1_std": 0.00373,
+  "acc_mean": 0.869959,
+  "seconds": 371.9,
+  "decision": ""
+}

@@ -1,0 +1,36 @@
+{
+  "id": "261004_pg_logistic",
+  "date": "2026-10-04",
+  "author": "pg",
+  "name": "logistic",
+  "hypothesis": "logistic loss fits a 0/1 target better than squared error",
+  "baseline": "261004_pg_mse-gd",
+  "commit": "ace05f6",
+  "dirty": false,
+  "protocol": {
+    "rows": 328135,
+    "folds": 5,
+    "seed": 42
+  },
+  "config": {
+    "preprocessing": {},
+    "model": {
+      "name": "logistic_regression",
+      "max_iters": 500,
+      "gamma": 0.05
+    },
+    "threshold": "positive_rate"
+  },
+  "f1_folds": [
+    0.398162,
+    0.39969,
+    0.403434,
+    0.405681,
+    0.404447
+  ],
+  "f1_mean": 0.402283,
+  "f1_std": 0.002873,
+  "acc_mean": 0.894461,
+  "seconds": 135.8,
+  "decision": ""
+}

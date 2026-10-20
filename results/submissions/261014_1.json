@@ -1,0 +1,12 @@
+{
+  "id": "261014_1",
+  "date": "2026-10-14",
+  "run": "261014_aa_tuned-logistic-v2-aspirin",
+  "cv_f1_mean": 0.443672,
+  "commit": "04e5e55",
+  "dirty": false,
+  "csv_sha256": "0a97469bd3a4055cc7bce57b9939d47874d6e4d634b9e3c8c7150b28ed96030b",
+  "predicted_positive": 0.128955,
+  "aicrowd_f1": "0.455",
+  "aicrowd_accuracy": "0.882"
+}
